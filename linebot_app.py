@@ -55,6 +55,10 @@ def upload():
         else: 
             result = '檔案格式不支援...'                      
         return render_template("index.html", data = result)
+        
+@app.route('/goal',methods=['GET','POST'])    
+def goal():
+   return render_template("goal.html")
 
 # 上傳檔案至 google drive            
 def uploadfile_gdrive(filepath, filename):  
