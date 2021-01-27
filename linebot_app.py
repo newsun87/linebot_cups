@@ -9,8 +9,7 @@ from linebot.exceptions import (
 )
 from linebot.models import *
 import json
-import sys
-import os
+import sys, os, time
 import mimetypes
 import configparser
 from pydrive.auth import GoogleAuth
@@ -77,7 +76,8 @@ def uploadfile_gdrive(filepath, filename):
     if gfile.uploaded:
       os.remove(filepath)
       result = '檔案傳送完成...'
-      #client.publish("cups/cups0001", "print", 1, True) 
+      client.publish("cups/cups0001", "print", 1, True)
+      time.sleep(2) 
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
