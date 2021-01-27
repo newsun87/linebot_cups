@@ -13,6 +13,10 @@ import json
 import sys
 import os
 import mimetypes
+import configparser
+
+config = configparser.ConfigParser()
+config.read('linebot_cups.conf')
 
 # 接收列印的檔案類型 
 mimetype_list=['text/plain', 'text/csv', 'application/pdf',
@@ -41,12 +45,13 @@ def upload():
         return render_template("upload.html", data = result)
 
 # 上傳檔案至 google drive            
-def uploadfile_gdrive(filepath, filename):
+def uploadfile_gdrive(filepath, filename):  
   gauth = GoogleAuth()
   #gauth.CommandLineAuth() #透過授權碼認證
   drive = GoogleDrive(gauth)
   try:
-    folder_id = '135y-D-jDEh-Bub_WpjmhYxWxJkUyPmUr'
+    folder_id = config.get('gdrive', 'folder_id')
+    #folder_id = '135y-D-jDEh-Bub_WpjmhYxWxJkUyPmUr'
     #上傳檔案至指定目錄及設定檔名     
     gfile = drive.CreateFile({"parents":[{"kind": "drive#fileLink", "id": folder_id}], 'title': filename})
     #指定上傳檔案的內容    
@@ -61,10 +66,12 @@ def uploadfile_gdrive(filepath, filename):
     result = '檔案傳送失敗...'
   return result               
 
+linebot_access_token = config.get('linebot', 'linebot_access_token')
+linebot_secret = config.get('linebot', 'linebot_secret')
 # Channel Access Token
-line_bot_api = LineBotApi('JKJkz4hElXX4yy73HizJSwJMRNdlj31RRq2L71c9VsMs13c+/g/7+G0eiKxkqHRMvO+IX4PcP8B9kOPrbCXHFhHNPLkNphrHioduYZZSdlclknF3ieXbcDrpfoM3oLR+cr7dz5Sjhmsr/7Pm1Ch2tgdB04t89/1O/w1cDnyilFU=')
+line_bot_api = LineBotApi(linebot_access_token)
 # Channel Secret
-handler = WebhookHandler('ad3396ef8a757726b629cf85fdee6622') 
+handler = WebhookHandler(linebot_secret) 
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
