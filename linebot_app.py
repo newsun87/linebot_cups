@@ -17,10 +17,6 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import paho.mqtt.client as mqtt
 
-# paho callbacks
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-
 #目前所在絕對路徑
 basepath = os.path.dirname(__file__)
 print(basepath)
@@ -81,7 +77,7 @@ def uploadfile_gdrive(filepath, filename):
     if gfile.uploaded:
       os.remove(filepath)
       result = '檔案傳送完成...'
-      client.publish("cups/cups0001", "print", 0, True) 
+      #client.publish("cups/cups0001", "print", 1, True) 
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
@@ -135,6 +131,10 @@ def printer_template():
          )
         )
     return buttons_template_message
+
+# paho callbacks
+def on_connect(client, userdata, flags, rc):
+  print("Connected with result code "+str(rc))
 
 if __name__ == "__main__":
   client = mqtt.Client()  
