@@ -69,10 +69,10 @@ def uploadfile_gdrive(filepath, filename):
     #指定上傳檔案的內容    
     gfile.SetContentFile(filepath)
     gfile.Upload() # Upload the file.
-    print("Uploading succeeded!")
-    result = '檔案列印中...'
+    print("Uploading succeeded!")    
     if gfile.uploaded:
       os.remove(filepath)
+      result = '檔案傳送完成...'
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
