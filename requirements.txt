@@ -1,0 +1,8 @@
+line-bot-sdk==1.8.0
+flask==1.0.2
+gunicorn
+paho-mqtt
+firebase_admin
+translate
+configparser==5.0.0
+line_notify

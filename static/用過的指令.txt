@@ -1,0 +1,86 @@
+df -h
+sudo su
+exit
+PATH
+echo $PWD
+dog=123
+echo $dog
+export
+export dog
+export
+env
+cat .bashrc
+nano .bashrc
+export dog=123
+source .bashrc #設定檔生效
+echo $SHELL
+alias le='ls -al'
+alias aa='python3 123456.py'
+
+sudo apt-get update -y
+sudo apt-get install python3-venv
+python3 -m venv env
+pip3 list
+sudo pip install flask
+
+https://reurl.cc/D6ok0e
+xxxxxxxxx@stud.sju.edu.tw
+python
+本機 
+python_test.py
+LINUX 安裝 SSH client
+sudo apt-get install openssh-client
+csie6113
+putty 遠端登入
+ls > /dev/null #螢幕不須出
+123:456:789:aaa:bbb:ccc:ddd:eee
+
+sudo apt-get install python3-pip
+sudo apt-get update
+unzip 壓縮檔
+52.253.90.92
+sudo visudo
+chown 
+chgrp
+chmod 740 -R aaa #更改資料夾 aaa 底下的所有檔案 為 rwxr-----
+groupadd #新增群組
+adduser 帳戶名稱 # 新增帳戶
+passwd 帳戶名稱 # 修改密碼
+/dev/video0 #外加攝影機裝置0
+sudo apt install unzip
+which ngrok
+建構機器人環境
+1. 建立品牌 (provider)
+2. 建立機器人帳號
+3. 產生 linenotify 通行碼
+4. 產生機器人對外服務的網址
+cd linebot-example
+sh ngrok_url_linenotify.sh(手機會收到網址的訊息)
+5. 將網址貼到機器人帳號的 webhook URL
+6. 更改 app.py 的 access_token
+更改 channel secret
+7. 安裝套件
+sudo apt install python3-pip
+pip3 install line-bot-sdk
+pip3 install flask
+8. 執行機器人程式 
+python3 app.py
+Docker
+1. docker search <基礎OS名稱>
+2. docker pull 倉庫/<映像>:<版本> 
+3. docker images # 查詢所有映象檔
+4. docker run -it <映象檔名稱> /bin/bash
+5. docker rmi -f <映象檔名稱> 
+
+Line Bot
+1. message.event.type # 判斷收到的訊息類型
+2. message.event.text # 收到的文字內容
+
+sudo chmod +x filename #設定檔案的權限為可執行
+ifconfig 
+sudo apt-get install ssh
+wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip 
+
+unzip ngrok-stable-linux-amd64.zip 
+sudo mv ngrok /bin 
+

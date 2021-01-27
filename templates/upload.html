@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <meta charset="UTF-8">
+    <title>檔案上傳</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script> 
+     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+       <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script> 
+     <style>
+       #MainDiv button {
+           margin:3px;
+       }
+     </style>
+     <script> 
+		  var firebaseConfig = {
+				apiKey: "AIzaSyAG501H9o5I_q-2lLKei5aDUBsJQrigxmQ",
+				authDomain: "line-bot-test-77a80.firebaseapp.com",
+				databaseURL: "https://line-bot-test-77a80.firebaseio.com"					
+        };
+        firebase.initializeApp(firebaseConfig);        
+        var db = firebase.database();
+        $(document).ready(function (){			
+			$("#mainTable").hide();
+			$("#uploadfile").hide();
+			$("#cpus_query").hide();
+			result=[];			
+			$('#ButtonFile').click(function (){ // 查詢用戶報到資料					
+				$("#mainTable").hide();
+				$("#uploadfile").show();			
+				$("#cpus_query").hide();
+				$("#tbody").empty();  
+				$("#thead").empty()
+			});
+			 $('#ButtonCUPSQuery').click(function (){ // 查詢用戶報到資料				
+				$("#mainTable").show();
+				$("#uploadfile").hide();			 
+				$("#cpus_query").show();                          
+             });
+			
+		});
+		
+		function dataDisplay(result){						                
+           var hostname = result['hostname']					   
+		   var ap = result['ap']
+		   var queuename = result['queuename']
+		   var ngrok_url = result['ngrok_url']	  		  						    						    
+		    $("#tbody").append( //新增表格資料
+		     "<tr><td>" + hostname + "</td>" +
+		      "<td>" + ap + "</td>" +
+		      "<td>" + queuename + "</td>" +
+		      "<td>" + ngrok_url + "</td></tr>" 
+		    )		          
+         } 
+         
+        function processFormData(){
+		 var cupsName = $("#cups_id").val(); 
+		 var db_ref_path = "/line-printer-bot/"+cupsName; // firebase 資料庫基本路徑  
+         $("#tbody").empty();  
+		 $("#thead").empty()				
+		 $("#tbody").empty();		   
+		 db.ref(db_ref_path).on("value", function(snapshot){	
+		   if (snapshot.val()){	
+		    $("#thead").append( //新增表格資料
+			  "<tr><th>主機名稱</th><th>連線 AP</th><th>印表機名稱</th><th>CUPS 網址</th></tr>" 
+            )  			  													   
+            count = 0;	                  			
+            snapshot.forEach(function(item){ 
+			 console.log(item.val()) 			  					
+			 result[item.key]=item.val();
+			 count=count+1;							                    
+            })                    
+            dataDisplay(result);                                                                 
+           }
+          else {
+			alert("資料庫不存在")
+		  }
+		 });	               
+        }
+		 
+	 </script> 
+		
+    </head> 
+	<body>
+		<div class="row">		
+          <div id="MainDiv" class="col-md-6" style="margin:5px">		        
+            <img src="static/file.png" width="32" height="32">            
+            <button id="ButtonFile">上傳檔案</button>
+            <img src="static/query.png" width="32" height="32">  
+            <button id="ButtonCUPSQuery">印列系統查詢</button>
+            <p></p>
+              <div id="cpus_query">
+				<input id="cups_id" type='text' size="10" name='cups_id' value='cups0001' />
+                <input id="cups_btn" type='button' value='送出' onclick='processFormData();' />				  
+			  </div>
+			  <p></p>                       
+             <table id="mainTable" class="display hover" border="1">	    
+              <thead id="thead" align="center">               
+              </thead> 
+              <tbody id="tbody" align="center">		 
+              </tbody>
+             </table>        
+             <div id="uploadfile">		
+		      <h2><strong>請你選擇一個檔案列印</strong></h2>
+		      <form method='post' enctype='multipart/form-data'>
+		        <input type='file' name='file'/>
+		        <input type='submit' value='上傳'/>
+		      </form>
+		    </div>
+		  </div>
+        </div>
+		<h2>{{data}}</h2>	 
+	</body>
+	
+</html>

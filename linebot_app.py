@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8
+from flask import Flask, request, abort, render_template
+
+from linebot import (
+    LineBotApi, WebhookHandler
+)
+from linebot.exceptions import (
+    InvalidSignatureError
+)
+from linebot.models import *
+import json
+import sys
+import os
+import mimetypes
+
+# 接收列印的檔案類型 
+mimetype_list=['text/plain', 'text/csv', 'application/pdf',
+     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+     'application/vnd.ms-powerpoint','application/msword','application/vnd.ms-excel']
+
+app = Flask(__name__)
+
+@app.route('/',methods=['GET','POST'])    
+def upload():
+    if request.method=='GET':
+      return render_template('upload.html')
+    else:        
+        file=request.files['file']
+        upload_path = os.path.join(basepath, 'static', file.filename) 
+        file_type = mimetypes.guess_type(file.filename)[0]
+        print(file_type)
+        if file_type in mimetype_list:
+            file.save(upload_path)
+            print(file.filename)
+            filepath=upload_path
+            result = uploadfile_gdrive(filepath, file.filename)            
+        else: 
+            result = '檔案格式不支援...'                      
+        return render_template("upload.html", data = result)
+
+# 上傳檔案至 google drive            
+def uploadfile_gdrive(filepath, filename):
+  gauth = GoogleAuth()
+  #gauth.CommandLineAuth() #透過授權碼認證
+  drive = GoogleDrive(gauth)
+  try:
+    folder_id = '135y-D-jDEh-Bub_WpjmhYxWxJkUyPmUr'
+    #上傳檔案至指定目錄及設定檔名     
+    gfile = drive.CreateFile({"parents":[{"kind": "drive#fileLink", "id": folder_id}], 'title': filename})
+    #指定上傳檔案的內容    
+    gfile.SetContentFile(filepath)
+    gfile.Upload() # Upload the file.
+    print("Uploading succeeded!")
+    result = '檔案列印中...'
+    if gfile.uploaded:
+      os.remove(filepath)
+  except:
+    print("Uploading failed.")
+    result = '檔案傳送失敗...'
+  return result               
+
+# Channel Access Token
+line_bot_api = LineBotApi('JKJkz4hElXX4yy73HizJSwJMRNdlj31RRq2L71c9VsMs13c+/g/7+G0eiKxkqHRMvO+IX4PcP8B9kOPrbCXHFhHNPLkNphrHioduYZZSdlclknF3ieXbcDrpfoM3oLR+cr7dz5Sjhmsr/7Pm1Ch2tgdB04t89/1O/w1cDnyilFU=')
+# Channel Secret
+handler = WebhookHandler('ad3396ef8a757726b629cf85fdee6622') 
+
+# 監聽所有來自 /callback 的 Post Request
+@app.route("/callback", methods=['POST'])
+def callback():
+    # get X-Line-Signature header value
+    signature = request.headers['X-Line-Signature']
+    # get request body as text
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+    # handle webhook body
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
+    return 'OK'
+
+# 處理訊息
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+   if event.message.text == 'print':
+      buttons_template_message = printer_template()
+      line_bot_api.reply_message(event.reply_token, buttons_template_message)
+   elif event.message.text == 'page':
+      message = TextSendMessage(text = 'http://192.168.43.92:5000')
+      line_bot_api.reply_message(event.reply_token, message)
+		
+def printer_template():
+    buttons_template_message = TemplateSendMessage(
+         alt_text = '我是系統設定按鈕選單模板',
+         template = ButtonsTemplate(
+            thumbnail_image_url = 'https://i.imgur.com/oimUK1g.png', 
+            title = '檔案列印選單',  # 你的標題名稱
+            text = '開啟網頁連結，選擇要列印的檔案',  # 你要問的問題，或是文字敘述            
+            actions = [ # action 最多只能4個喔！
+                URIAction(
+                    label = '網頁連結', # 在按鈕模板上顯示的名稱
+                    uri = "http://192.168.43.92:5000"  
+                )   
+            ]
+         )
+        )
+    return buttons_template_message
+
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0', port=5000)
+
+     
