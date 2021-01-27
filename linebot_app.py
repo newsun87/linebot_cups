@@ -41,7 +41,7 @@ app = Flask(__name__)
 @app.route('/',methods=['GET','POST'])    
 def upload():
     if request.method=='GET':
-      return render_template('upload.html')
+      return render_template('index.html')
     else:        
         file=request.files['file']
         upload_path = os.path.join(basepath, 'static', file.filename) 
@@ -54,7 +54,7 @@ def upload():
             result = uploadfile_gdrive(filepath, file.filename)            
         else: 
             result = '檔案格式不支援...'                      
-        return render_template("upload.html", data = result)
+        return render_template("index.html", data = result)
 
 # 上傳檔案至 google drive            
 def uploadfile_gdrive(filepath, filename):  
