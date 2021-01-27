@@ -136,11 +136,14 @@ def printer_template():
 def on_connect(client, userdata, flags, rc):
   print("Connected with result code "+str(rc))
 
-if __name__ == "__main__":
-  client = mqtt.Client()  
-  client.on_connect = on_connect  
-  #client.on_message = on_message  
-  client.connect("broker.mqttdashboard.com", 1883)
+client = mqtt.Client()  
+client.on_connect = on_connect  
+client.on_message = on_message  
+client.connect("broker.mqttdashboard.com", 1883) 
+client.publish("volume", mqttmsg, 0, retain=False) #發佈訊息 
+client.loop_start()
+
+if __name__ == "__main__":  
   app.run(debug=True, host='0.0.0.0', port=5000)
 
      
