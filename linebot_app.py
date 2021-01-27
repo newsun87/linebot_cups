@@ -14,6 +14,18 @@ import sys
 import os
 import mimetypes
 import configparser
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+
+#目前所在絕對路徑
+basepath = os.path.dirname(__file__)
+print(basepath)
+
+mimetype_list=['text/plain', 'text/csv', 'application/pdf',
+     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+     'application/vnd.ms-powerpoint','application/msword','application/vnd.ms-excel']
+
 
 config = configparser.ConfigParser()
 config.read('linebot_cups.conf')
