@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8
 from flask import Flask, request, abort, render_template
 
@@ -16,6 +15,11 @@ import mimetypes
 import configparser
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
+import paho.mqtt.client as mqtt
+
+# paho callbacks
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
 
 #目前所在絕對路徑
 basepath = os.path.dirname(__file__)
@@ -77,6 +81,7 @@ def uploadfile_gdrive(filepath, filename):
     if gfile.uploaded:
       os.remove(filepath)
       result = '檔案傳送完成...'
+      client.publish("cups/cups0001", "print", 1, False) 
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
@@ -132,6 +137,10 @@ def printer_template():
     return buttons_template_message
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+  client = mqtt.Client()  
+  client.on_connect = on_connect  
+  #client.on_message = on_message  
+  client.connect("broker.mqttdashboard.com", 1883)
+  app.run(debug=True, host='0.0.0.0', port=5000)
 
      
