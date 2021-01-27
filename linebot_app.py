@@ -138,7 +138,7 @@ def on_connect(client, userdata, flags, rc):
 
 client = mqtt.Client()  
 client.on_connect = on_connect  
-client.on_message = on_message  
+#client.on_message = on_message  
 client.connect("broker.mqttdashboard.com", 1883) 
 client.loop_start()
 
