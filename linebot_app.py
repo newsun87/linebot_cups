@@ -88,7 +88,7 @@ def handle_message(event):
       buttons_template_message = printer_template()
       line_bot_api.reply_message(event.reply_token, buttons_template_message)
    elif event.message.text == 'page':
-      message = TextSendMessage(text = 'http://192.168.43.92:5000')
+      message = TextSendMessage(text = 'https://liff.line.me/1654118646-GYvYL8WQ')
       line_bot_api.reply_message(event.reply_token, message)
 		
 def printer_template():
@@ -101,7 +101,7 @@ def printer_template():
             actions = [ # action 最多只能4個喔！
                 URIAction(
                     label = '網頁連結', # 在按鈕模板上顯示的名稱
-                    uri = "http://192.168.43.92:5000"  
+                    uri = "https://liff.line.me/1654118646-GYvYL8WQ"  
                 )   
             ]
          )
