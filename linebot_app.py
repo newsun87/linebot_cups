@@ -129,7 +129,8 @@ def handle_message(event):
       message = TextSendMessage(text = 'https://liff.line.me/1654118646-GYvYL8WQ')
       line_bot_api.reply_message(event.reply_token, message)
    elif event.message.text == 'delete':
-      delete_gdrive(file_id, pdfname, filename)
+      delete_gdrive()
+      message = TextSendMessage(text = '檔案刪除完成')
       line_bot_api.reply_message(event.reply_token, message)
 		
 def printer_template():
