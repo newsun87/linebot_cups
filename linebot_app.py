@@ -84,6 +84,9 @@ def uploadfile_gdrive(filepath, filename):
   return result 
   
 def delete_gdrive():
+  gauth = GoogleAuth()
+  #gauth.CommandLineAuth() #透過授權碼認證
+  drive = GoogleDrive(gauth)
   # 取得 gdrive 檔案清單
   try:
     file_list1 = drive.ListFile({'q': "'135y-D-jDEh-Bub_WpjmhYxWxJkUyPmUr' in parents and trashed=false"}).GetList() 
