@@ -81,7 +81,21 @@ def uploadfile_gdrive(filepath, filename):
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
-  return result               
+  return result 
+  
+def delete_gdrive():
+  # 取得 gdrive 檔案清單
+  try:
+    file_list1 = drive.ListFile({'q': "'135y-D-jDEh-Bub_WpjmhYxWxJkUyPmUr' in parents and trashed=false"}).GetList() 
+    for file1 in file_list1:
+     print('title: %s, id: %s' % (file1['title'],file1['id']))     
+     print("刪除文件檔...")
+     #刪除 gdrive 文件檔案  
+     gauth = GoogleAuth()
+     #gauth.CommandLineAuth() #透過授權碼認證
+     drive = GoogleDrive(gauth)
+     file1 = drive.CreateFile({'id': file1['id']})
+     file1.Delete()               
 
 linebot_access_token = config.get('linebot', 'linebot_access_token')
 linebot_secret = config.get('linebot', 'linebot_secret')
@@ -113,6 +127,9 @@ def handle_message(event):
       line_bot_api.reply_message(event.reply_token, buttons_template_message)
    elif event.message.text == 'page':
       message = TextSendMessage(text = 'https://liff.line.me/1654118646-GYvYL8WQ')
+      line_bot_api.reply_message(event.reply_token, message)
+   elif event.message.text == 'delete':
+      delete_gdrive(file_id, pdfname, filename)
       line_bot_api.reply_message(event.reply_token, message)
 		
 def printer_template():
