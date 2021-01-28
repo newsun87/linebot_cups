@@ -95,7 +95,9 @@ def delete_gdrive():
      #gauth.CommandLineAuth() #透過授權碼認證
      drive = GoogleDrive(gauth)
      file1 = drive.CreateFile({'id': file1['id']})
-     file1.Delete()               
+     file1.Delete()
+  except:
+    print("Downloading failed.")               
 
 linebot_access_token = config.get('linebot', 'linebot_access_token')
 linebot_secret = config.get('linebot', 'linebot_secret')
