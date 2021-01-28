@@ -138,8 +138,9 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg): # 收到訂閱訊息的處理    
   print(msg.topic + " " + msg.payload.decode())       
-  if msg.payload.decode() == 'finish':       
-   return render_template("index.html", data = "檔案列印完成....)   
+  if msg.payload.decode() == 'finish': 
+   print("receive finish message")      
+   return render_template("index.html", data = "檔案列印完成....")   
   
 client = mqtt.Client()  
 client.on_connect = on_connect  
