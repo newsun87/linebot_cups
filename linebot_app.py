@@ -78,7 +78,7 @@ def uploadfile_gdrive(filepath, filename):
       result = '檔案傳送完成...'
       client.publish("cups/cups0001", "print", 2, retain=False)
       time.sleep(1)
-      #client.publish("cups/cups0001", "", 2, retain=False)       
+      client.publish("cups/cups0001", "", 2, retain=False)       
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
