@@ -76,7 +76,8 @@ def uploadfile_gdrive(filepath, filename):
     if gfile.uploaded:
       os.remove(filepath)
       result = '檔案傳送完成...'
-      client.publish("cups/cups0001", "print", 2, retain=False)       
+      client.publish("cups/cups0001", "print", 2, retain=False)
+      client.publish("cups/cups0001", "", 2, retain=False)       
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
@@ -135,13 +136,12 @@ def printer_template():
 def on_connect(client, userdata, flags, rc):
   print("Connected with result code "+str(rc))
 
-client = mqtt.Client()  
-client.on_connect = on_connect  
-#client.on_message = on_message  
-client.connect("broker.mqttdashboard.com", 1883) 
-client.loop_start()
-
 if __name__ == "__main__":  
+  client = mqtt.Client()  
+  client.on_connect = on_connect  
+  #client.on_message = on_message  
+  client.connect("broker.mqttdashboard.com", 1883) 
+  client.loop_start()
   app.run(debug=True, host='0.0.0.0', port=5000)
 
      
