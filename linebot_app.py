@@ -135,10 +135,15 @@ def printer_template():
 # paho callbacks
 def on_connect(client, userdata, flags, rc):
   print("Connected with result code "+str(rc))
+
+def on_message(client, userdata, msg): # 收到訂閱訊息的處理    
+  print(msg.topic + " " + msg.payload.decode())       
+  if msg.payload.decode() == 'finish':       
+   return render_template("index.html", data = "檔案列印完成....)   
   
 client = mqtt.Client()  
 client.on_connect = on_connect  
-#client.on_message = on_message  
+client.on_message = on_message  
 client.connect("broker.mqttdashboard.com", 1883) 
 client.loop_start()
 
