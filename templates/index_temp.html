@@ -15,38 +15,40 @@
        }
      </style>
      <script> 
-		  var YourLiffAppId = '1654118646-GYvYL8WQ'
-		  var firebaseConfig = {
+		var YourLiffAppId = '1654118646-GYvYL8WQ'
+	    var firebaseConfig = {
 				apiKey: "AIzaSyAG501H9o5I_q-2lLKei5aDUBsJQrigxmQ",
 				authDomain: "line-bot-test-77a80.firebaseapp.com",
 				databaseURL: "https://line-bot-test-77a80.firebaseio.com"					
         };
         firebase.initializeApp(firebaseConfig);        
         var db = firebase.database();
-        $(document).ready(function (){	
+        $(document).ready(function (){		    
 			//初始 LIFF SDK
-         initializeLiff(YourLiffAppId);       
-		         			
-			$("#mainTable").hide();
+           initializeLiff(YourLiffAppId);
+           $("#mainTable").hide();
 			$("#uploadfile").hide();
 			$("#cpus_query").hide();
 			result=[];			
+            const context = liff.getContext();
+			const userid = context.userId
+			$('input[name="userid"]').val(userid)
+			console.log(userid)           			
+			
 			$('#ButtonFile').click(function (){ // 查詢用戶報到資料					
-				$("#mainTable").hide();
+				//$("#mainTable").hide();
 				$("#uploadfile").show();			
 				$("#cpus_query").hide();
 				$("#tbody").empty();  
 				$("#thead").empty()
 			});
-			 $('#ButtonCUPSQuery').click(function (){ // 查詢用戶報到資料				
+			 $('#ButtonCUPSQuery').click(function (){ // 查詢用戶報到資料								
 				$("#mainTable").show();
+				$("#showdata").hide();
 				$("#uploadfile").hide();			 
 				$("#cpus_query").show();                          
              });
-             context = liff.getContext();
-             userid = context.userId;
-		     $('input[name="userid"]').val(userid);
-		     console.log(userid); 			
+			
 		});
 		
 		function dataDisplay(result){						                
@@ -86,7 +88,7 @@
 		  }
 		 });	               
         }
-         function initializeLiff(myLiffId){
+        function initializeLiff(myLiffId){
             liff
                 .init({
                     liffId: myLiffId
@@ -110,7 +112,7 @@
     </head> 
 	<body>
 		<div class="row">		
-          <div id="MainDiv" class="col-md-6" style="margin:5px">		        
+          <div id="MainDiv" class="col-md-6" style="margin:5px">			     	        
             <img src="static/file.png" width="32" height="32">            
             <button id="ButtonFile">上傳檔案</button>
             <img src="static/query.png" width="32" height="32">  
@@ -129,7 +131,7 @@
              </table>        
              <div id="uploadfile">		
 		      <h2><strong>請你選擇一個檔案列印</strong></h2>
-		      <form method='post' enctype='multipart/form-data'>
+		      <form method='post' enctype='multipart/form-data' action="/">
 		        <input type='file' name='file'/>
 		        <input id = "useid" type='text' name='userid' hidden/>
 		        <input type='submit' value='上傳'/>
@@ -137,7 +139,7 @@
 		    </div>
 		  </div>
         </div>
-		<h2>{{data}}</h2>	 
+		<h2 id="showdata">{{data}}</h2>	 
 	</body>
 	
 </html>

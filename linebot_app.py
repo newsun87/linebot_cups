@@ -40,7 +40,7 @@ def loadINI():
     linebot_access_token = config.get('common', 'linebot_access_token')
     linebot_secret = config.get('common', 'linebot_secret')
     device_list_str = config['common']['cups_id_list']
-    return ([linebot_access_token , linebot_secret])
+    return ([linebot_access_token , linebot_secret, device_list_str])
 
 # 接收列印的檔案類型 
 mimetype_list=['text/plain', 'text/csv', 'application/pdf',
@@ -72,7 +72,13 @@ def upload():
         return render_template("index.html", data = result)
      
 @app.route('/register',methods=['GET','POST'])    
-def register():   
+def register(): 
+   cupspath = os.path.dirname(os.path.realpath(__file__))
+   cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
+   # 創建對象
+   config = configparser.ConfigParser()
+   # 讀取INI
+   config.read(cfgpath, encoding='utf-8')  
    if request.method=='GET':
       return render_template('register.html')
    else:
@@ -81,12 +87,7 @@ def register():
      device_list_str = iniContent[2]
      device_list = device_list_str.split(",") 
      print(device_list)
-     cupspath = os.path.dirname(os.path.realpath(__file__))
-     cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
-     # 創建對象
-     config = configparser.ConfigParser()
-     # 讀取INI
-     config.read(cfgpath, encoding='utf-8')
+     
      device_opts_list = config.options("device")
      print('device_opts_list', device_opts_list)     
      #device_num = config.get('device', 'cups_id')
