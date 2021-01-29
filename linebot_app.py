@@ -70,10 +70,9 @@ def upload():
         else: 
             result = '檔案格式不支援...'                      
         return render_template("index.html", data = result)
-userid=''        
+     
 @app.route('/register',methods=['GET','POST'])    
-def register():
-   global userid
+def register():   
    if request.method=='GET':
       return render_template('register.html')
    else:
