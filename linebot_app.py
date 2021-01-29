@@ -24,16 +24,30 @@ mimetype_list=['text/plain', 'text/csv', 'application/pdf',
      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
      'application/vnd.ms-powerpoint','application/msword','application/vnd.ms-excel']
-
-
-config = configparser.ConfigParser()
-config.read('linebot_cups.conf')
+     
+def loadINI():
+    cupspath = os.path.dirname(os.path.realpath(__file__))
+    cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
+    # 創建對象
+    config = configparser.ConfigParser()
+    # 讀取INI
+    config.read(cfgpath, encoding='utf-8')
+    # 取得所有sections
+    sections = config.sections()
+    # 取得某section之所有items，返回格式為list
+    linebot_access_token = config.get('linebot', 'linebot_access_token')
+    linebot_secret = config.get('linebot', 'linebot_secret')
+    device_list = config.items('device_list')
+    return ([linebot_access_token , linebot_secret, device_items])
 
 # 接收列印的檔案類型 
 mimetype_list=['text/plain', 'text/csv', 'application/pdf',
      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
      'application/vnd.ms-powerpoint','application/msword','application/vnd.ms-excel']
+
+iniContent = loadINI()
+print(iniContent)
 
 app = Flask(__name__)
 
@@ -76,8 +90,8 @@ def uploadfile_gdrive(filepath, filename):
     if gfile.uploaded:
       os.remove(filepath)
       result = '檔案傳送完成...'
-      client.publish("cups/cups0001", "print", qos=1)
-      client.publish("cups/cups0001", "", qos=1)               
+      client.publish("cups/"+iniContent[2], "print", qos=1)
+      client.publish("cups/"+iniContent[2], "", qos=1)               
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
@@ -102,12 +116,10 @@ def delete_gdrive():
   except:
     print("Downloading failed.")               
 
-linebot_access_token = config.get('linebot', 'linebot_access_token')
-linebot_secret = config.get('linebot', 'linebot_secret')
 # Channel Access Token
-line_bot_api = LineBotApi(linebot_access_token)
+line_bot_api = LineBotApi(iniContent[0])
 # Channel Secret
-handler = WebhookHandler(linebot_secret) 
+handler = WebhookHandler(iniContent[1]) 
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
@@ -127,17 +139,37 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-   if event.message.text == 'print':
-      buttons_template_message = printer_template()
-      line_bot_api.reply_message(event.reply_token, buttons_template_message)
+   device_num = iniContent[2]
+   if event.message.text == 'register':
+     cupspath = os.path.dirname(os.path.realpath(__file__))
+     cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
+    # 創建對象
+     config = configparser.ConfigParser()
+    # 讀取INI
+     config.read(cfgpath, encoding='utf-8')
+     config.set('device', 'cups_id', 'cups0002')
+     config.write(open(cfgpath, "w"))
+     message = TextSendMessage(text = '註冊成功....')  
+   elif event.message.text == 'print':    
+     if device_num == '':
+       message = TextSendMessage(text = '列印裝置未註冊....')
+     else:  
+       message = printer_template()     
    elif event.message.text == 'page':
-      message = TextSendMessage(text = 'https://liff.line.me/1654118646-GYvYL8WQ')
-      line_bot_api.reply_message(event.reply_token, message)
+      if device_num == '':
+        message = TextSendMessage(text = '列印裝置未註冊....')
+      else:
+        message = TextSendMessage(text = 'https://liff.line.me/1654118646-GYvYL8WQ')      
    elif event.message.text == 'delete':
-      delete_gdrive()
-      message = TextSendMessage(text = '檔案刪除完成')
-      line_bot_api.reply_message(event.reply_token, message)
-		
+      if device_num == '':
+        message = TextSendMessage(text = '列印裝置未註冊....')
+      else:
+        delete_gdrive()
+        message = TextSendMessage(text = '檔案刪除完成')     
+   else:
+     message = TextSendMessage(text = '我不懂你的意思...')
+   line_bot_api.reply_message(event.reply_token, message)
+	
 def printer_template():
     buttons_template_message = TemplateSendMessage(
          alt_text = '我是系統設定按鈕選單模板',

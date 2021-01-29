@@ -5,9 +5,10 @@ linebot_secret = ad3396ef8a757726b629cf85fdee6622
 [gdrive]
 folder_id = 135y-D-jDEh-Bub_WpjmhYxWxJkUyPmUr
 
-[device_list]
-cups_id_list = cups0001, cups0002, cups0003
+[cups_id]
+device_num = 
 
-[device]
-cups_id = cups0002
+[device_items]
+cups_id_1 = 123
+cups_id_2 = 456
 
