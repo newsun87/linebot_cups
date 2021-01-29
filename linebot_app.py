@@ -24,21 +24,23 @@ mimetype_list=['text/plain', 'text/csv', 'application/pdf',
      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
      'application/vnd.ms-powerpoint','application/msword','application/vnd.ms-excel']
-     
+
+ 
+       
 def loadINI():
     cupspath = os.path.dirname(os.path.realpath(__file__))
     cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
     # 創建對象
     config = configparser.ConfigParser()
-    # 讀取INI
-    config.read(cfgpath, encoding='utf-8')
+   # 讀取INI
+    config.read(cfgpath, encoding='utf-8')     
     # 取得所有sections
     sections = config.sections()
     # 取得某section之所有items，返回格式為list
-    linebot_access_token = config.get('linebot', 'linebot_access_token')
-    linebot_secret = config.get('linebot', 'linebot_secret')
-    device_list = config.items('device_list')
-    return ([linebot_access_token , linebot_secret, device_items])
+    linebot_access_token = config.get('common', 'linebot_access_token')
+    linebot_secret = config.get('common', 'linebot_secret')
+    device_list_str = config['common']['cups_id_list']
+    return ([linebot_access_token , linebot_secret])
 
 # 接收列印的檔案類型 
 mimetype_list=['text/plain', 'text/csv', 'application/pdf',
@@ -68,18 +70,58 @@ def upload():
         else: 
             result = '檔案格式不支援...'                      
         return render_template("index.html", data = result)
-        
+userid=''        
+@app.route('/register',methods=['GET','POST'])    
+def register():
+   global userid
+   if request.method=='GET':
+      return render_template('register.html')
+   else:
+     device_input=request.form['deviceid']
+     userid=request.form['userid']  
+     device_list_str = iniContent[2]
+     device_list = device_list_str.split(",") 
+     print(device_list)
+     cupspath = os.path.dirname(os.path.realpath(__file__))
+     cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
+     # 創建對象
+     config = configparser.ConfigParser()
+     # 讀取INI
+     config.read(cfgpath, encoding='utf-8')
+     device_opts_list = config.options("device")
+     print('device_opts_list', device_opts_list)     
+     #device_num = config.get('device', 'cups_id')
+     for item in device_list:
+      if item == device_input:
+       print(item,device_input)
+       result = '註冊成功....'       
+       config.set('device', userid, device_input)      
+       config.write(open(cfgpath, "w"))
+       break 
+      else:
+       result = '列印裝置不存在....'               
+     return render_template("register.html", data = result)       
+
 @app.route('/goal',methods=['GET','POST'])    
 def goal():
    return render_template("goal.html")
 
 # 上傳檔案至 google drive            
-def uploadfile_gdrive(filepath, filename):  
+def uploadfile_gdrive(filepath, filename): 
+  userid=request.form['userid']  
+  cupspath = os.path.dirname(os.path.realpath(__file__))
+  cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
+  # 創建對象
+  config = configparser.ConfigParser()
+  # 讀取INI
+  config.read(cfgpath, encoding='utf-8')   
   gauth = GoogleAuth()
   #gauth.CommandLineAuth() #透過授權碼認證
   drive = GoogleDrive(gauth)
+  mqtt_msg = config.get('device', userid) 
+  print("mqtt_msg", mqtt_msg)
   try:
-    folder_id = config.get('gdrive', 'folder_id')
+    folder_id = config.get('common', 'folder_id')
     #folder_id = '135y-D-jDEh-Bub_WpjmhYxWxJkUyPmUr'
     #上傳檔案至指定目錄及設定檔名     
     gfile = drive.CreateFile({"parents":[{"kind": "drive#fileLink", "id": folder_id}], 'title': filename})
@@ -90,8 +132,8 @@ def uploadfile_gdrive(filepath, filename):
     if gfile.uploaded:
       os.remove(filepath)
       result = '檔案傳送完成...'
-      client.publish("cups/"+iniContent[2], "print", qos=1)
-      client.publish("cups/"+iniContent[2], "", qos=1)               
+      #client.publish("cups/"+mqtt_msg, "print", qos=1)
+      #client.publish("cups/"+mqtt_msg, "", qos=1)               
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
@@ -139,30 +181,30 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-   device_num = iniContent[2]
-   if event.message.text == 'register':
-     cupspath = os.path.dirname(os.path.realpath(__file__))
-     cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
-    # 創建對象
-     config = configparser.ConfigParser()
-    # 讀取INI
-     config.read(cfgpath, encoding='utf-8')
-     config.set('device', 'cups_id', 'cups0002')
-     config.write(open(cfgpath, "w"))
-     message = TextSendMessage(text = '註冊成功....')  
-   elif event.message.text == 'print':    
+   cupspath = os.path.dirname(os.path.realpath(__file__))
+   cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
+     # 創建對象
+   config = configparser.ConfigParser()
+     # 讀取INI
+   config.read(cfgpath, encoding='utf-8') 
+   userid = event.source.user_id
+   print('userid', userid ) 
+   device_num = config.get('device', userid)
+   if event.message.text == 'register': 
+     message = TextSendMessage(text = '請點選 https://liff.line.me/1654118646-kzqdwpx0')     
+   elif event.message.text == 'print':         
      if device_num == '':
-       message = TextSendMessage(text = '列印裝置未註冊....')
+       message = TextSendMessage(text = '未註冊列印裝置....')
      else:  
        message = printer_template()     
    elif event.message.text == 'page':
       if device_num == '':
-        message = TextSendMessage(text = '列印裝置未註冊....')
+        message = TextSendMessage(text = '未註冊列印裝置....')
       else:
         message = TextSendMessage(text = 'https://liff.line.me/1654118646-GYvYL8WQ')      
    elif event.message.text == 'delete':
       if device_num == '':
-        message = TextSendMessage(text = '列印裝置未註冊....')
+        message = TextSendMessage(text = '未註冊列印裝置....')
       else:
         delete_gdrive()
         message = TextSendMessage(text = '檔案刪除完成')     

@@ -15,14 +15,21 @@
        }
      </style>
      <script> 
-		  var firebaseConfig = {
+		 var YourLiffAppId = '1654118646-GYvYL8WQ'
+	    var firebaseConfig = {
 				apiKey: "AIzaSyAG501H9o5I_q-2lLKei5aDUBsJQrigxmQ",
 				authDomain: "line-bot-test-77a80.firebaseapp.com",
 				databaseURL: "https://line-bot-test-77a80.firebaseio.com"					
         };
         firebase.initializeApp(firebaseConfig);        
         var db = firebase.database();
-        $(document).ready(function (){			
+        $(document).ready(function (){
+			//初始 LIFF SDK
+            initializeLiff(YourLiffAppId);
+            const context = liff.getContext();
+			const userid = context.userId
+			$('input[name="userid"]').val(userid)
+			console.log(userid)           			
 			$("#mainTable").hide();
 			$("#uploadfile").hide();
 			$("#cpus_query").hide();
@@ -34,8 +41,9 @@
 				$("#tbody").empty();  
 				$("#thead").empty()
 			});
-			 $('#ButtonCUPSQuery').click(function (){ // 查詢用戶報到資料				
+			 $('#ButtonCUPSQuery').click(function (){ // 查詢用戶報到資料								
 				$("#mainTable").show();
+				$("#showdata").hide();
 				$("#uploadfile").hide();			 
 				$("#cpus_query").show();                          
              });
@@ -79,6 +87,24 @@
 		  }
 		 });	               
         }
+        function initializeLiff(myLiffId){
+            liff
+                .init({
+                    liffId: myLiffId
+                })
+                .then(() => {                   
+                    initializeApp(); //取得LIFF各種物件及屬性
+                })
+                .catch((err) => {
+                    alert(JSON.stringify(err));
+                });
+        }
+        
+        function initializeApp(){
+			if (!liff.isLoggedIn()) { // 如果Line用戶沒有登入，就必須事先登入
+              	liff.login();
+            } 				 
+        }     
 		 
 	 </script> 
 		
@@ -106,12 +132,13 @@
 		      <h2><strong>請你選擇一個檔案列印</strong></h2>
 		      <form method='post' enctype='multipart/form-data'>
 		        <input type='file' name='file'/>
+		        <input id = "useid" type='text' name='userid' hidden/>
 		        <input type='submit' value='上傳'/>
 		      </form>
 		    </div>
 		  </div>
         </div>
-		<h2>{{data}}</h2>	 
+		<h2 id="showdata">{{data}}</h2>	 
 	</body>
 	
 </html>
