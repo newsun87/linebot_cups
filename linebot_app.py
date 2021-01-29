@@ -132,8 +132,8 @@ def uploadfile_gdrive(filepath, filename):
     if gfile.uploaded:
       os.remove(filepath)
       result = '檔案傳送完成...'
-      #client.publish("cups/"+mqtt_msg, "print", qos=1)
-      #client.publish("cups/"+mqtt_msg, "", qos=1)               
+      client.publish("cups/"+mqtt_msg, "print", qos=1)
+      client.publish("cups/"+mqtt_msg, "", qos=1)               
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
