@@ -20,13 +20,6 @@ import paho.mqtt.client as mqtt
 basepath = os.path.dirname(__file__)
 print(basepath)
 
-mimetype_list=['text/plain', 'text/csv', 'application/pdf',
-     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-     'application/vnd.ms-powerpoint','application/msword','application/vnd.ms-excel']
-
- 
-       
 def loadINI():
     cupspath = os.path.dirname(os.path.realpath(__file__))
     cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
@@ -188,8 +181,13 @@ def handle_message(event):
      # 讀取INI
    config.read(cfgpath, encoding='utf-8') 
    userid = event.source.user_id
-   print('userid', userid ) 
-   device_num = config.get('device', userid)
+   print('userid', userid )
+   if config.has_option('device',userid): 
+     device_num = config.get('device', userid)
+   else:
+     config.set('device', userid, " ")
+     config.write(open("linebot_cups.conf", "w"))
+     device_num = config.get('device', userid)     
    if event.message.text == 'register': 
      message = TextSendMessage(text = '請點選 https://liff.line.me/1654118646-kzqdwpx0')     
    elif event.message.text == 'print':         
