@@ -86,7 +86,6 @@ def register():
      print(device_list)     
      device_opts_list = config.options("device")
      print('device_opts_list', device_opts_list)     
-     #device_num = config.get('device', 'cups_id')
      for item in device_list:
       if item == device_input:
        print(item,device_input)
