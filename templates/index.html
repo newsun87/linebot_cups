@@ -22,15 +22,17 @@
 				databaseURL: "https://line-bot-test-77a80.firebaseio.com"					
         };
         firebase.initializeApp(firebaseConfig);        
-        var db = firebase.database();
+        var db = firebase.database();          
         $(document).ready(function (){	
 			//初始 LIFF SDK
-         initializeLiff(YourLiffAppId);       
-		         			
+            initializeLiff(YourLiffAppId);
+            context = liff.getContext();    
+            
+		    console.log(userid)	  
 			$("#mainTable").hide();
 			$("#uploadfile").hide();
 			$("#cpus_query").hide();
-			result=[];			
+			result=[];		    			
 			$('#ButtonFile').click(function (){ // 查詢用戶報到資料					
 				$("#mainTable").hide();
 				$("#uploadfile").show();			
@@ -38,15 +40,15 @@
 				$("#tbody").empty();  
 				$("#thead").empty()
 			});
+			
 			 $('#ButtonCUPSQuery').click(function (){ // 查詢用戶報到資料				
 				$("#mainTable").show();
 				$("#uploadfile").hide();			 
 				$("#cpus_query").show();                          
-             });
-             context = liff.getContext();
-             userid = context.userId;
-		     $('input[name="userid"]').val(userid);
-		     console.log(userid); 			
+             }); 
+             var userid = context.userId;             
+		    $('input[name="userid"]').val(userid); 
+                    	
 		});
 		
 		function dataDisplay(result){						                
@@ -102,7 +104,7 @@
         function initializeApp(){
 			if (!liff.isLoggedIn()) { // 如果Line用戶沒有登入，就必須事先登入
               	liff.login();
-            } 				 
+            } 
         }    
 		 
 	 </script> 

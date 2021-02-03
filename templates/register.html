@@ -28,10 +28,8 @@
 		  //初始 LIFF SDK
             initializeLiff(YourLiffAppId);
             const context = liff.getContext();
-			const userid = context.userId;
-			$('input[name="userid"]').val(userid)
-			console.log(userid)           
-             $('#ButtonSendTextMsg').click(function () {
+			const userid = context.userId;                
+            $('#ButtonSendTextMsg').click(function () {
 				 
 				 
 				//var device_num = $('#deviceid').val() 							
@@ -44,8 +42,10 @@
                     .then(() => {
                         liff.closeWindow();
                     })                
-            });    	
-			
+            }); 
+           
+			$('input[name="userid"]').val(userid)
+			console.log(userid)		
 		});
 		function initializeLiff(myLiffId){
             liff

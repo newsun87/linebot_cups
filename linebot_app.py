@@ -43,11 +43,13 @@ mimetype_list=['text/plain', 'text/csv', 'application/pdf',
 
 iniContent = loadINI()
 print(iniContent)
+userid =''
 
 app = Flask(__name__)
 
 @app.route('/',methods=['GET','POST'])    
 def upload():
+    global userid
     if request.method=='GET':
       return render_template('index.html')
     else:        
@@ -59,13 +61,14 @@ def upload():
             file.save(upload_path)
             print(file.filename)
             filepath=upload_path
-            result = uploadfile_gdrive(filepath, file.filename)            
+            result = uploadfile_gdrive(filepath, file.filename, userid)            
         else: 
             result = '檔案格式不支援...'                      
         return render_template("index.html", data = result)
      
 @app.route('/register',methods=['GET','POST'])    
 def register(): 
+   global userid
    cupspath = os.path.dirname(os.path.realpath(__file__))
    cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
    # 創建對象
@@ -76,11 +79,11 @@ def register():
       return render_template('register.html')
    else:
      device_input=request.form['deviceid']
-     userid=request.form['userid']  
+     #userid=request.form['userid'] 
+     print('userid', userid)
      device_list_str = iniContent[2]
      device_list = device_list_str.split(",") 
-     print(device_list)
-     
+     print(device_list)     
      device_opts_list = config.options("device")
      print('device_opts_list', device_opts_list)     
      #device_num = config.get('device', 'cups_id')
@@ -100,8 +103,9 @@ def goal():
    return render_template("goal.html")
 
 # 上傳檔案至 google drive            
-def uploadfile_gdrive(filepath, filename): 
-  userid=request.form['userid']  
+def uploadfile_gdrive(filepath, filename, userid):
+  #userid=request.form['userid']
+  print('userid', userid) 
   cupspath = os.path.dirname(os.path.realpath(__file__))  
   cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
   print('cfgpath', cfgpath)
@@ -174,6 +178,7 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+   global userid
    cupspath = os.path.dirname(os.path.realpath(__file__))
    cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
      # 創建對象
@@ -236,14 +241,14 @@ def on_message(client, userdata, msg): # 收到訂閱訊息的處理
   if msg.payload.decode() == 'finish': 
    print("receive finish message")      
    return render_template("index.html", data = "檔案列印完成....")   
-  
+client = mqtt.Client()  
+client.on_connect = on_connect  
+client.on_message = on_message  
+client.connect("broker.mqttdashboard.com", 1883) 
+client.loop_start()     
 
 if __name__ == "__main__":
-  client = mqtt.Client()  
-  client.on_connect = on_connect  
-  client.on_message = on_message  
-  client.connect("broker.mqttdashboard.com", 1883) 
-  client.loop_start()    
+  
   app.run(debug=True, host='0.0.0.0', port=5000)
 
      
