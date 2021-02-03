@@ -115,7 +115,6 @@ def uploadfile_gdrive(filepath, filename):
   print("mqtt_msg", mqtt_msg)
   try:
     folder_id = config.get('common', 'folder_id')
-    #folder_id = '135y-D-jDEh-Bub_WpjmhYxWxJkUyPmUr'
     #上傳檔案至指定目錄及設定檔名     
     gfile = drive.CreateFile({"parents":[{"kind": "drive#fileLink", "id": folder_id}], 'title': filename})
     #指定上傳檔案的內容    
@@ -126,7 +125,7 @@ def uploadfile_gdrive(filepath, filename):
       os.remove(filepath)
       result = '檔案傳送完成...'
       client.publish("cups/"+mqtt_msg, "print", qos=1)
-      client.publish("cups/"+mqtt_msg, "", qos=1)               
+      #client.publish("cups/"+mqtt_msg, "", qos=1)               
   except:
     print("Uploading failed.")
     result = '檔案傳送失敗...'
@@ -237,13 +236,13 @@ def on_message(client, userdata, msg): # 收到訂閱訊息的處理
    print("receive finish message")      
    return render_template("index.html", data = "檔案列印完成....")   
   
-client = mqtt.Client()  
-client.on_connect = on_connect  
-client.on_message = on_message  
-client.connect("broker.mqttdashboard.com", 1883) 
-client.loop_start()
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
+  client = mqtt.Client()  
+  client.on_connect = on_connect  
+  client.on_message = on_message  
+  client.connect("broker.mqttdashboard.com", 1883) 
+  client.loop_start()    
   app.run(debug=True, host='0.0.0.0', port=5000)
 
      
