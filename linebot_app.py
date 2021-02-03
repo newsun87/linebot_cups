@@ -102,8 +102,9 @@ def goal():
 # 上傳檔案至 google drive            
 def uploadfile_gdrive(filepath, filename): 
   userid=request.form['userid']  
-  cupspath = os.path.dirname(os.path.realpath(__file__))
+  cupspath = os.path.dirname(os.path.realpath(__file__))  
   cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
+  print('cfgpath', cfgpath)
   # 創建對象
   config = configparser.ConfigParser()
   # 讀取INI
