@@ -1,4 +1,6 @@
 #!/bin/bash
+git config --global user.email "newsun87@mail.sju.edu.tw"
+git config --global user.name "newsun87"
 git init  # 本地端資料夾新增一個 .git 資料(這個資料夾變成 Git 可管理的倉庫)
 git add . # 把該目錄下的所有檔案新增到倉庫
 git commit -m "Init"  # 把專案提交到倉庫
