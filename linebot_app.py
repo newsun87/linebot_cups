@@ -179,7 +179,7 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-   #global userid
+   global userid
    cupspath = os.path.dirname(os.path.realpath(__file__))
    cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
      # 創建對象
