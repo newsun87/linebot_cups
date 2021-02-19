@@ -179,7 +179,7 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-   global userid
+   #global userid
    cupspath = os.path.dirname(os.path.realpath(__file__))
    cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
      # 創建對象
@@ -190,17 +190,19 @@ def handle_message(event):
    print('userid', userid )
    if config.has_option('device',userid): 
      device_num = config.get('device', userid)
+     print('device_num', device_num)
    else:
      config.set('device', userid, " ")
      config.write(open("linebot_cups.conf", "w"))
-     device_num = config.get('device', userid)     
-   if event.message.text == 'register': 
-     message = TextSendMessage(text = '請點選 https://liff.line.me/1654118646-kzqdwpx0')     
-   elif event.message.text == 'print':         
+     device_num = config.get('device', userid)
+     print('device_num', device_num)       
+   if event.message.text == 'print':         
      if device_num == '':
        message = TextSendMessage(text = '未註冊列印裝置....')
      else:  
-       message = printer_template()     
+       message = printer_template()  
+   elif event.message.text == 'register': 
+     message = TextSendMessage(text = '請點選 https://liff.line.me/1654118646-kzqdwpx0')    
    elif event.message.text == 'page':
       if device_num == '':
         message = TextSendMessage(text = '未註冊列印裝置....')
