@@ -49,6 +49,7 @@ userid=''
 @app.route('/',methods=['GET','POST'])    
 def upload():
     global userid
+    time.sleep(1)
     print('userid', userid)
     if request.method=='GET':
       return render_template('index.html')
