@@ -43,10 +43,9 @@ mimetype_list=['text/plain', 'text/csv', 'application/pdf',
 
 iniContent = loadINI()
 print(iniContent)
-userid 
 
 app = Flask(__name__)
-
+userid='' 
 @app.route('/',methods=['GET','POST'])    
 def upload():
     global userid
@@ -70,6 +69,7 @@ def upload():
 @app.route('/register',methods=['GET','POST'])    
 def register(): 
    global userid
+   time.sleep(1)
    print('userid', userid)
    cupspath = os.path.dirname(os.path.realpath(__file__))
    cfgpath = os.path.join(cupspath, 'linebot_cups.conf')
